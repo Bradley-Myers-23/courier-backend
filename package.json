@@ -1,5 +1,5 @@
 {
-  "name": "travel-backend",
+  "name": "courier-backend",
   "version": "1.0.0",
   "description": "Recipe Node.js with Rest API",
   "main": "server.js",

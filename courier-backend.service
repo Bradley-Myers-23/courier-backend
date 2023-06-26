@@ -1,11 +1,11 @@
 [Unit]
-Description=NodeJS Travel Backend
+Description=NodeJS Courier Backend
 After=network.target
  
 [Service]
 Type=simple
 User=ubuntu
-WorkingDirectory=/home/ubuntu/nodeapps/travel-backend/
+WorkingDirectory=/home/ubuntu/nodeapps/courier-backend/
 ExecStart=/usr/bin/npm run start
 Restart=on-failure
  
