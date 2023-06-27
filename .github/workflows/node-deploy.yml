@@ -53,8 +53,11 @@ jobs:
           debug: false
           command: |
             cd nodeapps/courier-backend
+            sudo systemctl stop mysql
             npm install
-            sudo systemctl stop courier-backend
+            sudo systemctl start mysql
+            sudo systemctl stop travel-backend
             sudo cp travel-backend.service /lib/systemd/system/courier-backend.service
             sudo systemctl daemon-reload
             sudo systemctl start courier-backend
+            
