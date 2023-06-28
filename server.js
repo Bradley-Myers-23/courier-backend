@@ -17,29 +17,29 @@ app.use(cors(corsOptions));
 app.options("*", cors());
 
 // parse requests of content-type - application/json
-app.use(express.json());
+app.use(express.json({limit: '50mb'}));
 
 // parse requests of content-type - application/x-www-form-urlencoded
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // simple route
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to the courier backend." });
+  res.json({ message: "Welcome to the travel backend." });
 });
 
 require("./app/routes/auth.routes.js")(app);
-require("./app/routes/ingredient.routes")(app);
 require("./app/routes/site.routes")(app);
-require("./app/routes/recipe.routes")(app);
-require("./app/routes/recipeStep.routes")(app);
-require("./app/routes/recipeIngredient.routes")(app);
 require("./app/routes/user.routes")(app);
 require("./app/routes/hotel.routes")(app);
 require("./app/routes/trip.routes")(app);
-require("./app/routes/day.routes")(app);
+require("./app/routes/tripSite.routes")(app);
+require("./app/routes/tripDay.routes")(app);
+require("./app/routes/userTrip.routes")(app);
+require("./app/routes/hotelDay.routes")(app);
+
 
 // set port, listen for requests
-const PORT = process.env.PORT || 3201;
+const PORT = process.env.PORT || 3202;
 if (process.env.NODE_ENV !== "test") {
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`);

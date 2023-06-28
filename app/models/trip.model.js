@@ -4,9 +4,8 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
       allowNull: false,
     },
-    
-    description
-    : {
+    description: 
+    {
       type: Sequelize.STRING,
       allowNull: false,
     },

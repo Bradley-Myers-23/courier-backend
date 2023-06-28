@@ -47,7 +47,9 @@ exports.create = async (req, res) => {
           lastName: req.body.lastName,
           email: req.body.email,
           password: hash,
+          userType: req.body.userType,
           salt: salt,
+          userType: "Traveller"
         };
 
         // Save User in the database
@@ -72,6 +74,7 @@ exports.create = async (req, res) => {
                 firstName: user.firstName,
                 lastName: user.lastName,
                 id: user.id,
+                userType: user.userType,
                 token: token,
               };
               res.send(userInfo);

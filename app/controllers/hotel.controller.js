@@ -18,7 +18,11 @@ exports.create = (req, res) => {
     error.statusCode = 400;
     throw error;
   }
-
+  else if (req.body.Link === undefined) {
+    const error = new Error("Link Field cannot be empty for hotel!");
+    error.statusCode = 400;
+    throw error;
+  }
   else if (req.body.State === undefined) {
     const error = new Error("Price per unit cannot be empty for hotel!");
     error.statusCode = 400;
@@ -44,6 +48,7 @@ exports.create = (req, res) => {
     State: req.body.State,
     City: req.body.City,
     ZipCode:req.body.ZipCode,
+    Link:req.body.Link,
   };
   // Save Hotel in the database
   Hotel.create(hotel)

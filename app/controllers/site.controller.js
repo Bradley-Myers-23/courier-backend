@@ -24,6 +24,7 @@ exports.create = (req, res) => {
     name: req.body.name,
     address: req.body.address,
     description: req.body.description,
+    picture: req.body.picture,
   };
   // Save Site in the database
   Site.create(site)

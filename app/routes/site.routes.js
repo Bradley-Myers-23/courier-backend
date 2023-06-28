@@ -21,5 +21,5 @@ module.exports = (app) => {
   // Create a new Site
   router.delete("/sites/", [authenticateRoute], Site.deleteAll);
 
-  app.use("/travelapi", router);
+  app.use("/courierapi", router);
 };
