@@ -24,6 +24,7 @@ db.tripDay = require("./tripDay.model.js")(sequelize, Sequelize);
 db.userTrip = require("./userTrip.model.js")(sequelize, Sequelize);
 db.hotelDay = require("./hotelDay.model.js")(sequelize, Sequelize);
 db.order = require("./order.model.js")(sequelize, Sequelize);
+db.rate = require("./rate.model.js")(sequelize, Sequelize);
 
 // foreign keys for tripSite
 db.tripDay.hasMany(
