@@ -38,7 +38,7 @@ require("./app/routes/userTrip.routes")(app);
 require("./app/routes/hotelDay.routes")(app);
 require("./app/routes/order.routes")(app);
 require("./app/routes/rate.routes")(app);
-
+require("./app/routes/customer.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 3202;
