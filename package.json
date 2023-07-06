@@ -1,12 +1,12 @@
 {
-  "name": "travel-backend",
+  "name": "courier-backend",
   "version": "1.0.0",
   "description": "Recipe Node.js with Rest API",
   "main": "server.js",
   "scripts": {
     "test": "jest --",
     "start": "node server.js",
-    "bundle": "mkdir deploy && cp -r app server.js package.json package-lock.json travel-backend.service .env deploy"
+    "bundle": "mkdir deploy && cp -r app server.js package.json package-lock.json courier-backend.service .env deploy"
   },
   "keywords": [
     "node.js",
@@ -18,6 +18,7 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "googleapis": "^118.0.0",

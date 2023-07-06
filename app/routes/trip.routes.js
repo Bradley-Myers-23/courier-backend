@@ -1,26 +1,25 @@
 module.exports = (app) => {
-    const Trip = require("../controllers/trip.controller.js");
-    var router = require("express").Router();
-    const { authenticateRoute } = require("../authentication/authentication.js");
-  
-    // Create a new Trip
-    router.post("/trips/",Trip.create);
-  
-    // Retrieve all Trip
-    router.get("/trips/", Trip.findAll);
-  
-    // Retrieve a single Trip with tripId
-    router.get("/trips/:id", Trip.findOne);
-  
-    // Update an Trip with tripId
-    router.put("/trips/:id",Trip.update);
-  
-    // Delete an Trip with tripId
-    router.delete("/trips/:id",Trip.delete);
-  
-    // Create a new Trip
-    router.delete("/trips/",Trip.deleteAll);
-  
-    app.use("/travelapi", router);
-  };
-  
+  const Trip = require("../controllers/trip.controller.js");
+  const { authenticateRoute } = require("../authentication/authentication");
+  var router = require("express").Router();
+
+  // Create a new trip
+  router.post("/trips/", [authenticateRoute], Trip.create);
+
+  // Retrieve all published trips
+  router.get("/trips/", Trip.findAllPublished);
+
+  // Retrieve a single trip with id
+  router.get("/trips/:id", Trip.findOne);
+
+  // Update a trip with id
+  router.put("/trips/:id", [authenticateRoute], Trip.update);
+
+  // Delete a trip with id
+  router.delete("/trips/:id", [authenticateRoute], Trip.delete);
+
+  // Delete all trips
+  router.delete("/trips/", [authenticateRoute], Trip.deleteAll);
+
+  app.use("/courierapi", router);
+};
