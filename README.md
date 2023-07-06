@@ -30,7 +30,7 @@ npm install
 
    ```
 
-   ProxyPass /travelapi http://localhost:3201/travelapi
+   ProxyPass /courierapi http://localhost:3201/courierapi
 
    ```
 

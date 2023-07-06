@@ -35,6 +35,10 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
       allowNull: false,
     },
+    Link: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
   });
   return Hotel;
 };

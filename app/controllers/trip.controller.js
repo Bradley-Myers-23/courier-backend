@@ -1,39 +1,41 @@
 const db = require("../models");
 const Trip = db.trip;
+const TripDay = db.tripDay;
+const TripSite = db.tripSite;
+const HotelDay = db.hotelDay;
+const Site = db.site;
+const Hotel = db.hotel;
 const Op = db.Sequelize.Op;
-
-// Create and Save a new Trip
+// Create and Save a new trip
 exports.create = (req, res) => {
   // Validate request
   if (req.body.name === undefined) {
     const error = new Error("Name cannot be empty for trip!");
     error.statusCode = 400;
     throw error;
-  } else if (req.body.description === undefined) {
-    const error = new Error("description cannot be empty for trip!");
+  } else if (req.body.startDate === undefined) {
+    const error = new Error("Start Date cannot be empty for trip!");
     error.statusCode = 400;
     throw error;
-  } else if (req.body.startDate === undefined) {
-    const error = new Error("Price per unit cannot be empty for trip!");
+  } else if (req.body.endDate === undefined) {
+    const error = new Error("End Date cannot be empty for trip!");
+    error.statusCode = 400;
+    throw error;
+  } else if (req.body.userId === undefined) {
+    const error = new Error("User Id cannot be empty for trip!");
     error.statusCode = 400;
     throw error;
   }
 
-  else if (req.body.endDate === undefined) {
-    const error = new Error("Price per unit cannot be empty for trip!");
-    error.statusCode = 400;
-    throw error;
-  }
- 
-  // Create a Trip
+  // Create a trip
   const trip = {
     name: req.body.name,
     description: req.body.description,
     startDate: req.body.startDate,
     endDate: req.body.endDate,
-   
+    userId: req.body.userId,
   };
-  // Save Trip in the database
+  // Save trip in the database
   Trip.create(trip)
     .then((data) => {
       res.send(data);
@@ -41,107 +43,231 @@ exports.create = (req, res) => {
     .catch((err) => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while creating the Trip.",
+          err.message || "Some error occurred while creating the trip.",
       });
     });
 };
 
-// Retrieve all Trips from the database.
-exports.findAll = (req, res) => {
-  const tripId = req.query.tripId;
-  var condition = tripId
-    ? {
-        id: {
-          [Op.like]: `%${tripId}%`,
-        },
-      }
-    : null;
-
-  Trip.findAll({ where: condition, order: [["name", "ASC"]] })
+// Find all trips for a user
+exports.findAllForUser = (req, res) => {
+  const userId = req.params.userId;
+  Trip.findAll({
+    where: { userId: userId },
+    include: [
+      {
+        model: TripDay,
+        as: "tripDay",
+        required: false,
+        include: [
+          {
+            model: TripSite,
+            as: "tripSite",
+            required: false,
+            include: [
+              {
+                model: Site,
+                as: "site",
+                required: false,
+              },
+            ],
+            model: HotelDay,
+            as: "hotelDay",
+            required: false,
+            include: [
+              {
+                model: Hotel,
+                as: "hotel",
+                required: false,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    order: [
+      ["name", "ASC"],
+      [TripDay, "dayNumber", "ASC"],
+    ],
+  })
     .then((data) => {
-      res.send(data);
+      if (data) {
+        res.send(data);
+      } else {
+        res.status(404).send({
+          message: `Cannot find trips for user with id=${userId}.`,
+        });
+      }
     })
     .catch((err) => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving trips.",
+          err.message || "Error retrieving trips for user with id=" + userId,
       });
     });
 };
 
-// Find a single Trip with an id
-exports.findOne = (req, res) => {
-  const id = req.params.id;
-
-  Trip.findByPk(id)
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || "Error retrieving Trip with id=" + id,
-      });
-    });
-};
-
-// Update a Trip by the id in the request
-exports.update = (req, res) => {
-  const id = req.params.id;
-
-  Trip.update(req.body, {
-    where: { id: id },
+// Find all Published trips
+exports.findAllPublished = (req, res) => {
+  Trip.findAll({
+    include: [
+      {
+        model: TripDay,
+        as: "tripDay",
+        required: false,
+        include: [
+          {
+            model: TripSite,
+            as: "tripSite",
+            required: false,
+            include: [
+              {
+                model: Site,
+                as: "site",
+                required: false,
+              },
+            ],
+            model: HotelDay,
+            as: "hotelDay",
+            required: false,
+            include: [
+              {
+                model: Hotel,
+                as: "hotel",
+                required: false,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    order: [
+      ["name", "ASC"],
+      [TripDay, "dayNumber", "ASC"],
+    ],
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "Trip was updated successfully.",
-        });
+    .then((data) => {
+      if (data) {
+        res.send(data);
       } else {
-        res.send({
-          message: `Cannot update Trip with id=${id}. Maybe Trip was not found or req.body is empty!`,
+        res.status(404).send({
+          message: `Cannot find Published trips.`,
         });
       }
     })
     .catch((err) => {
       res.status(500).send({
-        message: err.message || "Error updating Trip with id=" + id,
+        message: err.message || "Error retrieving Published trips.",
       });
     });
 };
 
-// Delete a Trip with the specified id in the request
+// Find a single trip with an id
+exports.findOne = (req, res) => {
+  const id = req.params.id;
+  Trip.findAll({
+    where: { id: id },
+    include: [
+      {
+        model: TripDay,
+        as: "tripDay",
+        required: false,
+        include: [
+          {
+            model: TripSite,
+            as: "tripSite",
+            required: false,
+            include: [
+              {
+                model: Site,
+                as: "site",
+                required: false,
+              },
+            ],
+            model: HotelDay,
+            as: "hotelDay",
+            required: false,
+            include: [
+              {
+                model: Hotel,
+                as: "hotel",
+                required: false,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    order: [[TripDay, "dayNumber", "ASC"]],
+  })
+    .then((data) => {
+      if (data) {
+        res.send(data);
+      } else {
+        res.status(404).send({
+          message: `Cannot find trip with id=${id}.`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Error retrieving trip with id=" + id,
+      });
+    });
+};
+// Update a trip by the id in the request
+exports.update = (req, res) => {
+  const id = req.params.id;
+  Trip.update(req.body, {
+    where: { id: id },
+  })
+    .then((number) => {
+      if (number == 1) {
+        res.send({
+          message: "trip was updated successfully.",
+        });
+      } else {
+        res.send({
+          message: `Cannot update trip with id=${id}. Maybe trip was not found or req.body is empty!`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Error updating trip with id=" + id,
+      });
+    });
+};
+// Delete a trip with the specified id in the request
 exports.delete = (req, res) => {
   const id = req.params.id;
-
   Trip.destroy({
     where: { id: id },
   })
     .then((number) => {
       if (number == 1) {
         res.send({
-          message: "Trip was deleted successfully!",
+          message: "trip was deleted successfully!",
         });
       } else {
         res.send({
-          message: `Cannot delete Trip with id=${id}. Maybe Trip was not found!`,
+          message: `Cannot delete trip with id=${id}. Maybe trip was not found!`,
         });
       }
     })
     .catch((err) => {
       res.status(500).send({
-        message: err.message || "Could not delete Trip with id=" + id,
+        message: err.message || "Could not delete trip with id=" + id,
       });
     });
 };
-
-// Delete all Trips from the database.
+// Delete all trips from the database.
 exports.deleteAll = (req, res) => {
   Trip.destroy({
     where: {},
     truncate: false,
   })
     .then((number) => {
-      res.send({ message: `${number} Trips were deleted successfully!` });
+      res.send({ message: `${number} trips were deleted successfully!` });
     })
     .catch((err) => {
       res.status(500).send({
