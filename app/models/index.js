@@ -129,6 +129,18 @@ db.tripDay.belongsTo(
   { foreignKey: { allowNull: false }, onDelete: "CASCADE" }
 );
 
+//foreign key for order
+db.order.belongsTo(
+  db.customer,
+  { as: "customer" },
+  { foreignKey: {allowNull: false}, onDelete: "CASCADE"}
+);
+db.order.belongsTo(
+  db.user,
+  { as: "user" },
+  { foreignKey: {allowNull: true}, onDelete: "CASCADE"}
+);
+
 
 
 module.exports = db;
