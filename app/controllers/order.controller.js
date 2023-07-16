@@ -29,6 +29,11 @@ exports.create = (req, res) => {
     error.statusCode = 400;
     throw error;
   }
+  else if (req.body.customerId === undefined) {
+    const error = new Error("Customer cannot be empty for order!");
+    error.statusCode = 400;
+    throw error;
+  }
 
  
   // Create a order
@@ -38,6 +43,9 @@ exports.create = (req, res) => {
     pickupLocation: req.body.pickupLocation,
     dropoffLocation: req.body.dropoffLocation,
     status: req.body.status,
+    route: req.body.route,
+    customerId: req.body.customerId,
+    userId: req.body.userId,
   };
   // Save Order in the database
   Order.create(order)
