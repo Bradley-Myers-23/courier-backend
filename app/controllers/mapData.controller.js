@@ -1,13 +1,13 @@
 const db = require("../models");
 const MapData = db.mapData;
 const Op = db.Sequelize.Op;
-const startNode = 'E6'; 
-const endNode = 'A1'; 
+
 
 // Retrieve all MapData from the database.
 exports.findAll = (req, res) => {
-    const { startAddress, targetAddress } = req.body;
     const mapDataId = req.query.mapDataId;
+    const startAddress = req.body.startAddress;
+    const endAddress = req.body.endAddress;
     const condition = mapDataId
       ? {
           id: {
@@ -18,7 +18,25 @@ exports.findAll = (req, res) => {
   
     MapData.findAll({ where: condition })
       .then((data) => {
-        res.send(data);
+        const graph = convertDataToGraph(data);
+        calculateShortestPath(graph, startAddress, endAddress, (error, result) => {
+          if (error) {
+            console.error(error);
+            res.status(500).send({
+              message: "Error occurred while calculating the shortest path.",
+            });
+          } else {
+            const { path, distance } = result;
+            if (path.length === 0) {
+              console.log('No path found.');
+            } else {
+              console.log('Shortest path:', path.join(' -> '));
+              console.log('Addresses on the shortest path:', path.join(', '));
+              console.log('Shortest distance:', distance);
+            }
+            res.send(result); 
+          }
+        });
       })
       .catch((err) => {
         res.status(500).send({
@@ -27,13 +45,7 @@ exports.findAll = (req, res) => {
       });
   };
 
-var mysql = require('mysql2');
-var con = mysql.createConnection({
-    host:process.env.DB_HOST,
-    user:process.env.DB_USER,
-    password:process.env.DB_PW,
-    database:process.env.DB_NAME
-})
+
 
 class Graph {
   constructor() {
@@ -43,7 +55,6 @@ class Graph {
   addNode(address) {
     this.nodes.set(address, []);
   }
-f
   addEdge(fromNode, toNode) {
     this.nodes.get(fromNode).push(toNode);
   }
@@ -53,6 +64,33 @@ f
   }
 }
 
+function convertDataToGraph(results) {   
+  const graph = new Graph;
+  const addresses = new Set(); 
+
+   results.forEach((result) => {
+    const address = result.Address;
+    const adjacentAddress = result.AdjacentAddress;
+  
+    addresses.add(address);
+    addresses.add(adjacentAddress);
+  
+    graph.addNode(address);
+    graph.addNode(adjacentAddress);
+  });
+  
+  results.forEach((result) => {
+    const address = result.Address;
+    const adjacentAddress = result.AdjacentAddress;
+  
+    graph.addEdge(address, adjacentAddress);
+  });
+
+console.log('Graph:', graph);
+ 
+    return graph;
+  }
+  
 // Function to calculate the shortest path using Dijkstra's algorithm
 function calculateShortestPath( graph, startNode, endNode, callback) {
 
@@ -111,56 +149,5 @@ function calculateShortestPath( graph, startNode, endNode, callback) {
 }
 
 
-// Create the graph and populate it with data from the MySQL table
-const graph = new Graph();
-con.query('SELECT * FROM mapdata ORDER BY address, AdjacentAddress', (error, results) => {
-  if (error) {
-    console.error(error);
-    return;
-  }
 
-  console.log('Query results:', results);
-
-
-  const addresses = new Set(); 
-
-  results.forEach((result) => {
-    const address = result.Address;
-    const adjacentAddress = result.AdjacentAddress;
-  
-    addresses.add(address);
-    addresses.add(adjacentAddress);
-  
-    graph.addNode(address);
-    graph.addNode(adjacentAddress);
-  });
-  
-  results.forEach((result) => {
-    const address = result.Address;
-    const adjacentAddress = result.AdjacentAddress;
-  
-    graph.addEdge(address, adjacentAddress);
-  });
-
-console.log('Graph:', graph);
-
-  // Calculate the shortest path
-  calculateShortestPath(graph, startNode, endNode, (error, result) => {
-    if (error) {
-        console.error(error);
-      } else {
-        const { path, distance } = result;
-        if (path.length === 0) {
-          console.log('No path found.');
-        } else {
-          console.log('Shortest path:', path.join(' -> '));
-          console.log('Addresses on the shortest path:', path.join(', '));
-          console.log('Shortest distance:', distance);
-        }
-      }
-
-    // Close the database connection
-    con.end();
-  });
-});
 
