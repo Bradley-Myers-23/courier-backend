@@ -18,7 +18,15 @@ module.exports = (sequelize, Sequelize) => {
     address: {
         type: Sequelize.STRING,
         allowNull: true,
-      },    
+      }, 
+      Instructions: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },   
+      Location: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },   
     });
     return Customer;
   };

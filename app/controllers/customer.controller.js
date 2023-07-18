@@ -13,10 +13,6 @@ exports.create = (req, res) => {
     const error = new Error("Address cannot be empty for customer!");
     error.statusCode = 400;
     throw error;
-  } else if (req.body.PhoneNumber === undefined) {
-    const error = new Error("Phone cannot be empty for customer!");
-    error.statusCode = 400;
-    throw error;
   }
 
   // Create a customer
@@ -24,6 +20,8 @@ exports.create = (req, res) => {
     name: req.body.name,
     address: req.body.address,
     PhoneNumber: req.body.PhoneNumber,
+    Instructions:req.body.Instructions,
+    Location:req.body.Location
   };
   // Save Customer in the database
   Customer.create(customer)
