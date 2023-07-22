@@ -33,6 +33,11 @@ exports.findAll = (req, res) => {
               console.log('Shortest path:', path.join(' -> '));
               console.log('Addresses on the shortest path:', path.join(', '));
               console.log('Shortest distance:', distance);
+              const textDirections = generateTextDirections(path, data);
+
+              // Add the textDirections array to the result object
+              result.textDirections = textDirections;
+             
             }
             res.send(result); 
           }
@@ -91,6 +96,53 @@ console.log('Graph:', graph);
     return graph;
   }
   
+//function to generate the text directions for the path
+function generateTextDirections(path, data) {
+  console.log("path from text Direction:", path);
+  console.log("data from text Direction:", data);
+
+  // Check if there are at least two nodes in the path
+  if (path.length < 2) {
+    console.log('Insufficient path data to generate text directions.');
+    return;
+  }
+
+  // Array to store the text directions
+  const textDirections = [];
+
+  // Iterate over the path and process each pair of consecutive nodes
+  for (let i = 0; i < path.length - 1; i++) {
+    const currentNode = path[i];
+    const nextNode = path[i + 1];
+
+    // Find the corresponding "data" for the current and next nodes
+    const currentData = findDataByAddress(data, currentNode);
+    const nextData = findDataByAddress(data, nextNode);
+
+    // If "data" for both nodes is found, extract required information
+    if (currentData && nextData) {
+      const direction = currentData.Direction;
+      const onStreet = currentData.OnStreet;
+
+      // Add the text direction for this pair of nodes to the array
+      textDirections.push(`From ${currentNode} Go ${direction} on ${onStreet} To ${nextNode}`);
+    }
+  }
+
+  // Print the generated text directions
+  console.log('Generated Text Directions:');
+  console.log(textDirections.join('\n'));
+
+  return textDirections;
+}  
+
+// function to find the "data" by its Address or AdjacentAddress
+function findDataByAddress(data, address) {
+  const foundData = data.find((item) => item.Address === address || item.AdjacentAddress === address);
+  return foundData ? foundData.dataValues : null;
+}
+
+
 // Function to calculate the shortest path using Dijkstra's algorithm
 function calculateShortestPath( graph, startNode, endNode, callback) {
 
@@ -125,6 +177,7 @@ function calculateShortestPath( graph, startNode, endNode, callback) {
       path.push(startNode);
       path.reverse();
       return callback(null, { path, distance });
+  
     }
 
     // Get the adjacent nodes from the graph
