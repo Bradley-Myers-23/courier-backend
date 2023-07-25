@@ -3,7 +3,7 @@ module.exports = (app) => {
     var router = require("express").Router();
     const { authenticateRoute } = require("../authentication/authentication.js");
 
-    router.get("/mapData/", MapData.findAll);
+    router.get("/mapData/:startAddress/:endAddress", MapData.findAll);
     app.use("/courierapi", router);
   };
   

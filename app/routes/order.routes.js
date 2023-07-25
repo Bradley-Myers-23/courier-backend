@@ -20,7 +20,10 @@ module.exports = (app) => {
   
     // Delete all roders
     router.delete("/orders/",Order.deleteAll);
-  
+
+
+// find the order for the carier 
+    router.get("/orders/user/:useId", Order.findByUser);
     app.use("/courierapi", router);
   };
   

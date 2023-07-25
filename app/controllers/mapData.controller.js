@@ -5,18 +5,11 @@ const Op = db.Sequelize.Op;
 
 // Retrieve all MapData from the database.
 exports.findAll = (req, res) => {
-    const mapDataId = req.query.mapDataId;
-    const startAddress = req.body.startAddress;
-    const endAddress = req.body.endAddress;
-    const condition = mapDataId
-      ? {
-          id: {
-            [Op.like]: `%${mapDataId}%`,
-          },
-        }
-      : null;
+    const startAddress = req.params.startAddress;
+    const endAddress = req.params.endAddress;
+    
   
-    MapData.findAll({ where: condition })
+    MapData.findAll()
       .then((data) => {
         const graph = convertDataToGraph(data);
         calculateShortestPath(graph, startAddress, endAddress, (error, result) => {

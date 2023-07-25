@@ -1,6 +1,7 @@
 const db = require("../models");
 const Order = db.order;
 const Op = db.Sequelize.Op;
+const Customer = db.customer;
 
 // Create and Save a new Order
 exports.create = (req, res) => {
@@ -42,7 +43,7 @@ exports.create = (req, res) => {
     dropoffTime: req.body.dropoffTime,
     pickupLocation: req.body.pickupLocation,
     dropoffLocation: req.body.dropoffLocation,
-    status: req.body.status,
+    status: "assigned",
     route: req.body.route,
     customerId: req.body.customerId,
     userId: req.body.userId,
@@ -165,3 +166,32 @@ exports.deleteAll = (req, res) => {
     });
 };
 
+exports.findByUser = (req, res) => {
+  const userId = req.params.useId;
+
+  Order.findAll({
+    where: { userId: userId },
+    include: [
+      {
+        model: Customer,
+        as: "customer",
+        required: true,
+      },
+    ],
+  })
+    .then((data) => {
+      if (data) {
+        res.send(data);
+      } else {
+        res.send({ email: "not found" });
+        /*res.status(404).send({
+          message: `Cannot find User with email=${email}.`
+        });*/
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Error retrieving User with email=" + email,
+      });
+    });
+};
