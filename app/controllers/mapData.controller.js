@@ -98,8 +98,8 @@ console.log('Graph:', graph);
   
 //function to generate the text directions for the path
 function generateTextDirections(path, data) {
-  console.log("path from text Direction:", path);
-  console.log("data from text Direction:", data);
+ // console.log("path from text Direction:", path);
+ // console.log("data from text Direction:", data);
 
   // Check if there are at least two nodes in the path
   if (path.length < 2) {
