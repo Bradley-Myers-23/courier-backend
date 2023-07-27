@@ -150,3 +150,23 @@ exports.deleteAll = (req, res) => {
       });
     });
 };
+
+//to support the order getRate
+exports.getRates = async () => {
+  try {
+    const rates = await Rate.findAll();
+    const initialRate = rates.find((rate) => rate.dataValues.IntialPrice !== undefined);
+    const pricePerBlockRate = rates.find((rate) => rate.dataValues.pricePerBlock !== undefined);
+    
+    if (!initialRate || !pricePerBlockRate) {
+      throw new Error("Rates not found!");
+    }
+    
+    return {
+      initialRate: initialRate.dataValues.IntialPrice,
+      pricePerBlockRate: pricePerBlockRate.dataValues.pricePerBlock,
+    };
+  } catch (error) {
+    throw new Error("Error while retrieving rates: " + error.message);
+  }
+};

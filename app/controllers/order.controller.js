@@ -1,9 +1,71 @@
 const db = require("../models");
 const Order = db.order;
 const Op = db.Sequelize.Op;
+const mapData = require("./mapData.controller.js");
+const rate = require("./rate.controller.js");
+var routePath;
+var routeDistance = [];
+var initialRate;
+var pricePerBlockRate;
+var totalPrice;
+
+async function getRates() {
+  try {
+    const rates = await rate.getRates();
+    initialRate = rates.initialRate;
+    pricePerBlockRate = rates.pricePerBlockRate;
+    console.log("intial rates ----------------------", initialRate, pricePerBlockRate);
+  } catch (error) {
+    console.error("Error getting rates:", error.message);
+  }
+}
+
+
+getRates();
+
+
+async function getRouteAndDistance(startAddress, endAddress) {
+  return new Promise((resolve, reject) => {
+    const req = {
+      query: {
+        mapDataId: null,
+      },
+      body: {
+        startAddress: startAddress,
+        endAddress: endAddress,
+      },
+    };
+
+    const res = {
+      send: (result) => {
+        // The "result" object will have the path and distance, and textDirections added to it.
+        routePath = result.textDirections;
+        routeDistance = result.distance;
+        console.log("From getRouteAndDistance --------------------------",result.textDirections )
+        if (routeDistance != null) {
+          totalPrice = initialRate + (routeDistance * pricePerBlockRate);
+        }
+        else {
+          totalPrice = initialRate;
+        }
+        resolve({ routePath, routeDistance });
+      },
+      status: (statusCode) => {
+        return {
+          send: (data) => {
+            console.log(`Error: Status ${statusCode}, Data:`, data);
+            reject(new Error(`Error: Status ${statusCode}, Data: ${data}`));
+          },
+        };
+      },
+    };
+
+    mapData.findAll(req, res);
+  });
+}
 
 // Create and Save a new Order
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
   // Validate request
   if (req.body.pickupTime === undefined) {
     const error = new Error("PickupTime cannot be empty for order!");
@@ -35,29 +97,39 @@ exports.create = (req, res) => {
     throw error;
   }
 
- 
-  // Create a order
+  try {
+    await getRouteAndDistance(req.body.pickupLocation, req.body.dropoffLocation);
+    const routeString = JSON.stringify(routePath);
+
+   // Create a order
   const order = {
     pickupTime: req.body.pickupTime,
     dropoffTime: req.body.dropoffTime,
     pickupLocation: req.body.pickupLocation,
     dropoffLocation: req.body.dropoffLocation,
     status: req.body.status,
-    route: req.body.route,
     customerId: req.body.customerId,
     userId: req.body.userId,
+    route:  routeString,
+    price: totalPrice,
   };
-  // Save Order in the database
-  Order.create(order)
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the Order.",
+
+  
+
+    // Save Order in the database
+    Order.create(order)
+      .then((data) => {
+        res.send(data);
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message: err.message || "Some error occurred while creating the Order.",
+        });
       });
-    });
+  } catch (error) {
+    console.error(error.message);
+    console.log("aaaaaaaaaaaaa");
+  }
 };
 
 // Retrieve all Orders from the database.
