@@ -20,11 +20,8 @@ async function getRates() {
   }
 }
 
-
-getRates();
-
-
 async function getRouteAndDistance(startAddress, endAddress) {
+  await getRates();
   return new Promise((resolve, reject) => {
     const req = {
       query: {
@@ -44,6 +41,7 @@ async function getRouteAndDistance(startAddress, endAddress) {
         console.log("From getRouteAndDistance --------------------------",result.textDirections )
         if (routeDistance != null) {
           totalPrice = initialRate + (routeDistance * pricePerBlockRate);
+          console.log(totalPrice, initialRate, routeDistance, pricePerBlockRate);
         }
         else {
           totalPrice = initialRate;

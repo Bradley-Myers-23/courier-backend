@@ -1,19 +1,19 @@
 module.exports = (sequelize, Sequelize) => {
     const Rate = sequelize.define("rate", {
       pricePerBlock: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DOUBLE,
         allowNull: false,
       },
       IntialPrice: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DOUBLE,
         allowNull: false,
       },
       CancelFee: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DOUBLE,
         allowNull: false,
       },
       Bonus: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DOUBLE,
         allowNull: true,
       },
       
