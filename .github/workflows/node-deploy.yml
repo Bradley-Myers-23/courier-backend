@@ -39,7 +39,8 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
           ARGS: "-rltgoDzvO --delete"
           SOURCE: "deploy/"
-          REMOTE_HOST: "ec2-3-144-251-50.us-east-2.compute.amazonaws.com"
+
+          REMOTE_HOST: "ec2-52-14-109-89.us-east-2.compute.amazonaws.com"
           REMOTE_USER: ubuntu
           TARGET: "nodeapps/courier-backend" 
 
@@ -48,7 +49,7 @@ jobs:
         env:
           NAME: "Root"
         with:
-          hosts: "ubuntu@ec2-3-144-251-50.us-east-2.compute.amazonaws.com"
+          hosts: "ubuntu@ec2-52-14-109-89.us-east-2.compute.amazonaws.com"
           privateKey: ${{ secrets.SERVER_SSH_KEY }}
           debug: false
           command: |
