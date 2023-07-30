@@ -24,24 +24,17 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // simple route
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to the travel backend." });
+  res.json({ message: "Welcome to the courier backend." });
 });
 
 require("./app/routes/auth.routes.js")(app);
-require("./app/routes/site.routes")(app);
 require("./app/routes/user.routes")(app);
-require("./app/routes/hotel.routes")(app);
-require("./app/routes/trip.routes")(app);
-require("./app/routes/tripSite.routes")(app);
-require("./app/routes/tripDay.routes")(app);
-require("./app/routes/userTrip.routes")(app);
-require("./app/routes/hotelDay.routes")(app);
 require("./app/routes/order.routes")(app);
 require("./app/routes/rate.routes")(app);
 require("./app/routes/customer.routes")(app);
-
+require("./app/routes/mapData.routes")(app);
 // set port, listen for requests
-const PORT = process.env.PORT || 3202;
+const PORT = process.env.PORT || 3201;
 if (process.env.NODE_ENV !== "test") {
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`);

@@ -46,7 +46,7 @@ exports.create = (req, res) => {
     });
 };
 
-// Retrieve all Hotels from the database.
+// Retrieve all Rates from the database.
 exports.findAll = (req, res) => {
   const rateId = req.query.rateId;
   var condition = rateId
@@ -134,14 +134,14 @@ exports.delete = (req, res) => {
     });
 };
 
-// Delete all Hotels from the database.
+// Delete all Rates from the database.
 exports.deleteAll = (req, res) => {
   Rate.destroy({
     where: {},
     truncate: false,
   })
     .then((number) => {
-      res.send({ message: `${number} Hotels were deleted successfully!` });
+      res.send({ message: `${number} Rates were deleted successfully!` });
     })
     .catch((err) => {
       res.status(500).send({
@@ -149,4 +149,24 @@ exports.deleteAll = (req, res) => {
           err.message || "Some error occurred while removing all rates.",
       });
     });
+};
+
+//to support the order getRate
+exports.getRates = async () => {
+  try {
+    const rates = await Rate.findAll();
+    const initialRate = rates.find((rate) => rate.dataValues.IntialPrice !== undefined);
+    const pricePerBlockRate = rates.find((rate) => rate.dataValues.pricePerBlock !== undefined);
+    
+    if (!initialRate || !pricePerBlockRate) {
+      throw new Error("Rates not found!");
+    }
+    
+    return {
+      initialRate: initialRate.dataValues.IntialPrice,
+      pricePerBlockRate: pricePerBlockRate.dataValues.pricePerBlock,
+    };
+  } catch (error) {
+    throw new Error("Error while retrieving rates: " + error.message);
+  }
 };

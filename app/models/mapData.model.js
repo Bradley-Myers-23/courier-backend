@@ -19,5 +19,5 @@ const MapData = sequelize.define("mapData", {
   },
  
 });
-
+return MapData;
 };

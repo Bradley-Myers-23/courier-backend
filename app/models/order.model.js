@@ -25,7 +25,7 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: false,
       },
       route: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(5000),
         allowNull: true,
       },    
     });
