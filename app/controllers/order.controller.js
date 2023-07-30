@@ -1,5 +1,6 @@
 const db = require("../models");
 const Order = db.order;
+const Customer = db.customer;
 const Op = db.Sequelize.Op;
 const mapData = require("./mapData.controller.js");
 const rate = require("./rate.controller.js");
@@ -234,4 +235,35 @@ exports.deleteAll = (req, res) => {
       });
     });
 };
+
+exports.findByUser = (req, res) => {
+  const userId = req.params.useId;
+
+  Order.findAll({
+    where: { userId: userId },
+    include: [
+      {
+        model: Customer,
+        as: "customer",
+        required: true,
+      },
+    ],
+  })
+    .then((data) => {
+      if (data) {
+        res.send(data);
+      } else {
+        res.send({ email: "not found" });
+        /*res.status(404).send({
+          message: `Cannot find User with email=${email}.`
+        });*/
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Error retrieving User with email=" + email,
+      });
+    });
+};
+
 
