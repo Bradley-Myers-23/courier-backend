@@ -178,7 +178,7 @@ exports.update = async (req, res) => {
     const routeString = JSON.stringify(routePath);
 
     req.body.route = routeString;
-    if (req.body.status != 'Cancelled') {
+    if (req.body.status !== 'Cancelled') {
       req.body.price = totalPrice;
       };
 
