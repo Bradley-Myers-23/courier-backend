@@ -178,7 +178,9 @@ exports.update = async (req, res) => {
     const routeString = JSON.stringify(routePath);
 
     req.body.route = routeString;
-    req.body.price = totalPrice;
+    if (req.body.status !== 'Cancelled') {
+      req.body.price = totalPrice;
+      };
 
   Order.update(req.body, {
     where: { id: id },
