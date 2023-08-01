@@ -170,8 +170,15 @@ exports.findOne = (req, res) => {
 };
 
 // Update a Order by the id in the request
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
   const id = req.params.id;
+
+  try {
+    await getRouteAndDistance(req.body.pickupLocation, req.body.dropoffLocation);
+    const routeString = JSON.stringify(routePath);
+
+    req.body.route = routeString;
+    req.body.price = totalPrice;
 
   Order.update(req.body, {
     where: { id: id },
@@ -192,6 +199,10 @@ exports.update = (req, res) => {
         message: err.message || "Error updating Order with id=" + id,
       });
     });
+  } catch (error) {
+    console.error(error.message);
+    console.log("aaaaaaaaaaaaa");
+  }
 };
 
 // Delete a Order with the specified id in the request
